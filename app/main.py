@@ -30,6 +30,10 @@ class GenerateResponse(BaseModel):
 @app.on_event("startup")
 async def startup_event():
     global engine
+    if os.getenv("TESTING"):
+        logger.info("TESTING environment detected. Skipping real model loading.")
+        return
+        
     adapter_path = os.getenv("ADAPTER_PATH", None)
     logger.info(f"Initializing Inference Engine with adapter: {adapter_path}")
     engine = InferenceEngine(adapter_path=adapter_path)
