@@ -10,6 +10,11 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    env:
+      TESTING: "true"
+      PYTHONPATH: "."
+      BITSANDBYTES_NOWELCOME: "1"
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
     steps:
     - uses: actions/checkout@v4
@@ -24,8 +29,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install pytest httpx fastapi pydantic-settings pandas scikit-learn datasets transformers peft bitsandbytes torch --extra-index-url https://download.pytorch.org/whl/cpu
         
+    - name: Dependency check
+      run: |
+        python -c "import torch; import transformers; import peft; print('ML dependencies loaded')"
+        
     - name: Run tests
       run: |
-        export TESTING=true
-        export BITSANDBYTES_NOWELCOME=1
         python -m pytest tests/test_data.py tests/test_api.py
