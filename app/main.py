@@ -3,7 +3,6 @@ import time
 import logging
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from src.inference.engine import InferenceEngine
 from src.config import settings
 
 # Setup logging
@@ -34,6 +33,7 @@ async def startup_event():
         logger.info("TESTING environment detected. Skipping real model loading.")
         return
         
+    from src.inference.engine import InferenceEngine
     adapter_path = os.getenv("ADAPTER_PATH", None)
     logger.info(f"Initializing Inference Engine with adapter: {adapter_path}")
     engine = InferenceEngine(adapter_path=adapter_path)
@@ -65,5 +65,4 @@ async def health():
 
 if __name__ == "__main__":
     import uvicorn
-    import os
     uvicorn.run(app, host="0.0.0.0", port=8000)
