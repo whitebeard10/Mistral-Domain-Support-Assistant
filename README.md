@@ -50,8 +50,8 @@ graph LR
 ### Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/mistral-domain-support-assistant.git
-   cd mistral-domain-support-assistant
+   git clone https://github.com/whitebeard10/Mistral-Domain-Support-Assistant.git
+   cd Mistral-Domain-Support-Assistant
    ```
 
 2. Install dependencies:
@@ -124,3 +124,4 @@ Response:
 
 ## 📄 License
 MIT
+ 
