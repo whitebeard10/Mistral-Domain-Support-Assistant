@@ -22,8 +22,9 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pytest httpx fastapi pydantic-settings pandas scikit-learn datasets transformers
+        pip install pytest httpx fastapi pydantic-settings pandas scikit-learn datasets transformers peft bitsandbytes torch --extra-index-url https://download.pytorch.org/whl/cpu
         
     - name: Run tests
       run: |
+        export BITSANDBYTES_NOWELCOME=1
         python -m pytest tests/test_data.py tests/test_api.py
