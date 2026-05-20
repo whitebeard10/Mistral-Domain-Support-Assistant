@@ -151,7 +151,7 @@ cython_debug/
 .vscode/
 
 # Project Specific
-data/
-models/
-wandb/
+/data/
+/models/
+/wandb/
 *.jsonl
