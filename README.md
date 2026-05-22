@@ -122,6 +122,5 @@ Response:
 2. **Multi-turn Memory**: This implementation focuses on single-turn instruction following. Multi-turn context handling is limited.
 3. **Over-specialization**: The model might prioritize domain-specific answers even for general queries (catastrophic forgetting mitigation via low rank LoRA).
 
-## 📄 License
-MIT
+
  
