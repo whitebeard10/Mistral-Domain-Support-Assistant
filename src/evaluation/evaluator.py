@@ -27,10 +27,38 @@ class Evaluator:
         
         print(f"Running evaluation on {len(test_samples)} samples...")
         for sample in tqdm(test_samples):
-            # The processed data has 'text' which contains both inst and resp.
-            # We need to extract them for evaluation.
-            # In our case, the raw data is better for evaluation.
-            pass
+            # Check if it's processed data (has 'text') or raw (has 'instruction')
+            if 'instruction' in sample:
+                instr = sample['instruction']
+                ref = sample['response']
+            elif 'text' in sample:
+                # Extract from formatted text: <instruction> {instr} </instruction> <response> {ref} </response>
+                import re
+                instr_match = re.search(r'<instruction> (.*?) </instruction>', sample['text'])
+                ref_match = re.search(r'<response> (.*?) </response>', sample['text'])
+                instr = instr_match.group(1) if instr_match else ""
+                ref = ref_match.group(1) if ref_match else ""
+            else:
+                continue
+
+            pred_data = self.engine.generate(instr)
+            predictions.append(pred_data['response'])
+            references.append(ref)
+
+        # Compute metrics
+        rouge_results = self.rouge.compute(predictions=predictions, references=references)
+        # BLEU expects references to be a list of lists
+        bleu_results = self.bleu.compute(predictions=predictions, references=[[r] for r in references])
+        
+        print("\nEvaluation Results:")
+        print(f"ROUGE-L: {rouge_results['rougeL']:.4f}")
+        print(f"BLEU: {bleu_results['bleu']:.4f}")
+        
+        return {
+            "rouge": rouge_results,
+            "bleu": bleu_results,
+            "num_samples": len(predictions)
+        }
 
     def run_comparison(self, raw_data_path: str, num_samples: int = 20):
         """Compares zero-shot vs fine-tuned (if adapter exists)."""
