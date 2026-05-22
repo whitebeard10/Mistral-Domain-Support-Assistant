@@ -11,7 +11,7 @@ def get_tokenizer(model_name: str = settings.BASE_MODEL_NAME):
     """Loads and configures the tokenizer."""
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     tokenizer.pad_token = tokenizer.eos_token
-    tokenizer.padding_side = "right"  # Recommended for Llama-based models
+    tokenizer.padding_side = "right"  # gotta use right padding for llama models
     return tokenizer
 
 def load_quantized_model(model_name: str = settings.BASE_MODEL_NAME):
@@ -30,7 +30,7 @@ def load_quantized_model(model_name: str = settings.BASE_MODEL_NAME):
         trust_remote_code=True
     )
     
-    # Prepare for training
+    # prep for kbit training
     model.gradient_checkpointing_enable()
     model = prepare_model_for_kbit_training(model)
     

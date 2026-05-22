@@ -27,12 +27,12 @@ class Evaluator:
         
         print(f"Running evaluation on {len(test_samples)} samples...")
         for sample in tqdm(test_samples):
-            # Check if it's processed data (has 'text') or raw (has 'instruction')
+            # handle both raw and processed formats
             if 'instruction' in sample:
                 instr = sample['instruction']
                 ref = sample['response']
             elif 'text' in sample:
-                # Extract from formatted text: <instruction> {instr} </instruction> <response> {ref} </response>
+                # hacky regex to pull out the prompt parts
                 import re
                 instr_match = re.search(r'<instruction> (.*?) </instruction>', sample['text'])
                 ref_match = re.search(r'<response> (.*?) </response>', sample['text'])
@@ -45,9 +45,9 @@ class Evaluator:
             predictions.append(pred_data['response'])
             references.append(ref)
 
-        # Compute metrics
+        # calculate scores
         rouge_results = self.rouge.compute(predictions=predictions, references=references)
-        # BLEU expects references to be a list of lists
+        # bleu needs nested lists for some reason
         bleu_results = self.bleu.compute(predictions=predictions, references=[[r] for r in references])
         
         print("\nEvaluation Results:")
@@ -98,6 +98,6 @@ class Evaluator:
         return results, rouge_results, bleu_results
 
 if __name__ == "__main__":
-    # Example usage (would typically point to validation/test set)
-    evaluator = Evaluator(adapter_path=None) # Start with zero-shot for baseline
+    # quick local test
+    evaluator = Evaluator(adapter_path=None)
     evaluator.run_comparison("data/raw/raw_support_data.jsonl", num_samples=5)

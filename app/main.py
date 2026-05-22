@@ -7,7 +7,7 @@ from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel
 from src.config import settings
 
-# Structured JSON Logging Setup
+# setup json logging cause parsing text sucks
 class JsonFormatter(logging.Formatter):
     def format(self, record):
         log_record = {
@@ -27,7 +27,7 @@ logger.setLevel(logging.INFO)
 
 app = FastAPI(title="Mistral Domain Support Assistant API")
 
-# Global engine instance
+# global engine so we don't reload on every req
 engine = None
 
 class GenerateRequest(BaseModel):

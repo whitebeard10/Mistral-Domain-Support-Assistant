@@ -10,18 +10,18 @@ from src.config import settings
 from src.models.model_loader import get_tokenizer, load_quantized_model, setup_peft_model
 
 def train():
-    # 1. Load data
+    # 1. grab data
     dataset = load_dataset("json", data_files={
         "train": "data/processed/train.jsonl",
         "validation": "data/processed/validation.jsonl"
     })
     
-    # 2. Load model and tokenizer
+    # 2. load model + tokenizer
     tokenizer = get_tokenizer()
     model = load_quantized_model()
     model, peft_config = setup_peft_model(model)
     
-    # 3. Training Arguments
+    # 3. setup hparams (mostly standard stuff)
     training_args = TrainingArguments(
         output_dir=settings.OUTPUT_DIR,
         per_device_train_batch_size=settings.BATCH_SIZE,
@@ -44,7 +44,7 @@ def train():
         push_to_hub=False,
     )
     
-    # 4. Initialize Trainer
+    # 4. init trainer
     trainer = SFTTrainer(
         model=model,
         train_dataset=dataset["train"],
@@ -57,11 +57,11 @@ def train():
         callbacks=[EarlyStoppingCallback(early_stopping_patience=3)]
     )
     
-    # 5. Train
+    # 5. actually train it
     print("Starting training...")
     trainer.train()
     
-    # 6. Save final model
+    # 6. dump weights to disk
     trainer.save_model(os.path.join(settings.OUTPUT_DIR, "final"))
     print(f"Training complete. Model saved to {settings.OUTPUT_DIR}")
 

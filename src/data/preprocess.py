@@ -21,8 +21,7 @@ def clean_data(data: List[Dict]) -> List[Dict]:
     return df.to_dict('records')
 
 def format_prompt(sample: Dict) -> str:
-    """Formats sample into a structured instruction format."""
-    # User requested format: <system> <instruction> <response>
+    # format string the user wanted
     system_prompt = "You are a helpful domain-specific support assistant."
     instruction = sample['instruction']
     response = sample['response']
@@ -38,24 +37,24 @@ def preprocess_pipeline(input_path: str, output_dir: str):
     
     os.makedirs(output_dir, exist_ok=True)
     
-    # 1. Load
+    # 1. load
     raw_data = load_raw_data(input_path)
     
-    # 2. Clean
+    # 2. clean
     cleaned_data = clean_data(raw_data)
     
-    # 3. Format and Split
+    # 3. format & split
     df = pd.DataFrame(cleaned_data)
     train_df, val_df = train_test_split(df, test_size=settings.TRAIN_TEST_SPLIT, random_state=42)
     
     train_dataset = Dataset.from_pandas(train_df)
     val_dataset = Dataset.from_pandas(val_df)
     
-    # Apply formatting
+    # map the format
     train_dataset = train_dataset.map(format_prompt, remove_columns=train_dataset.column_names)
     val_dataset = val_dataset.map(format_prompt, remove_columns=val_dataset.column_names)
     
-    # Save processed data
+    # spit out to jsonl
     train_dataset.to_json(os.path.join(output_dir, "train.jsonl"))
     val_dataset.to_json(os.path.join(output_dir, "validation.jsonl"))
     

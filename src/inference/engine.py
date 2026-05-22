@@ -10,7 +10,7 @@ class InferenceEngine:
         self.tokenizer = AutoTokenizer.from_pretrained(settings.BASE_MODEL_NAME)
         self.tokenizer.pad_token = self.tokenizer.eos_token
         
-        # Load base model in 4-bit
+        # 4-bit quant to save vram
         bnb_config = BitsAndBytesConfig(
             load_in_4bit=True,
             bnb_4bit_quant_type="nf4",
@@ -61,7 +61,7 @@ class InferenceEngine:
         }
 
 if __name__ == "__main__":
-    # Test zero-shot
+    # quick zero-shot sanity check
     engine = InferenceEngine()
     result = engine.generate("How do I reset my password?")
     print(f"Response: {result['response']}")
