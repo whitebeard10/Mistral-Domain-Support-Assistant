@@ -29,7 +29,7 @@ def train():
         learning_rate=settings.LEARNING_RATE,
         logging_steps=settings.LOGGING_STEPS,
         num_train_epochs=settings.NUM_TRAIN_EPOCHS,
-        eval_strategy="steps",
+        evaluation_strategy="steps",
         eval_steps=settings.EVAL_STEPS,
         save_strategy="steps",
         save_steps=settings.SAVE_STEPS,
