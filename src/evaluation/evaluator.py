@@ -71,8 +71,19 @@ class Evaluator:
         results = []
         
         for sample in tqdm(samples):
-            instr = sample['instruction']
-            ref = sample['response']
+            # handle both raw and processed formats
+            if 'instruction' in sample:
+                instr = sample['instruction']
+                ref = sample['response']
+            elif 'text' in sample:
+                # hacky regex to pull out the prompt parts
+                import re
+                instr_match = re.search(r'<instruction> (.*?) </instruction>', sample['text'])
+                ref_match = re.search(r'<response> (.*?) </response>', sample['text'])
+                instr = instr_match.group(1) if instr_match else ""
+                ref = ref_match.group(1) if ref_match else ""
+            else:
+                continue
             
             pred_data = self.engine.generate(instr)
             pred = pred_data['response']
